@@ -1,0 +1,102 @@
+﻿@model WordBrain.Data.Models.LettersModel
+@{
+    ViewBag.Title = "Index";
+    var rowNumber = 0;
+}
+
+@using (Html.BeginForm())
+{
+    <b>Grid Size:</b>
+    <select id="GridHeight" name="GridHeight" onchange="document.location.href = ('/words/index/?gridHeight=' + document.getElementById('GridHeight').options[document.getElementById('GridHeight').selectedIndex].value + '&gridWidth=' + document.getElementById('GridWidth').options[document.getElementById('GridWidth').selectedIndex].value);">
+        <option @(Model.GridHeight == 3 ? "selected " : null) value="3">3</option>
+        <option @(Model.GridHeight == 4 ? "selected " : null) value="4">4</option>
+        <option @(Model.GridHeight == 5 ? "selected " : null) value="5">5</option>
+        <option @(Model.GridHeight == 6 ? "selected " : null) value="6">6</option>
+        <option @(Model.GridHeight == 7 ? "selected " : null) value="7">7</option>
+        <option @(Model.GridHeight == 8 ? "selected " : null) value="8">8</option>
+        <option @(Model.GridHeight == 9 ? "selected " : null) value="9">9</option>
+        <option @(Model.GridHeight == 10 ? "selected " : null) value="10">10</option>
+    </select>
+    <select id="GridWidth" name="GridWidth" onchange="document.location.href = ('/words/index/?gridHeight=' + document.getElementById('GridHeight').options[document.getElementById('GridHeight').selectedIndex].value + '&gridWidth=' + document.getElementById('GridWidth').options[document.getElementById('GridWidth').selectedIndex].value);">
+        <option @(Model.GridWidth == 3 ? "selected " : null) value="3">3</option>
+        <option @(Model.GridWidth == 4 ? "selected " : null) value="4">4</option>
+        <option @(Model.GridWidth == 5 ? "selected " : null) value="5">5</option>
+        <option @(Model.GridWidth == 6 ? "selected " : null) value="6">6</option>
+        <option @(Model.GridWidth == 7 ? "selected " : null) value="7">7</option>
+        <option @(Model.GridWidth == 8 ? "selected " : null) value="8">8</option>
+        <option @(Model.GridWidth == 9 ? "selected " : null) value="9">9</option>
+        <option @(Model.GridWidth == 10 ? "selected " : null) value="10">10</option>
+    </select>
+    <table>
+        @foreach (var row in Model.Rows)
+        {
+            var colNumber = 0;
+            <tr id="row@(rowNumber)">
+                @for (var i = 0; i < row.CharCount; i++)
+                {
+                    <td><input  type="text" tabindex="@i" class="character" id="col@(rowNumber)_@colNumber" name="col@(rowNumber)_@colNumber" style="width: 30px;" maxlength="1" value="@(row[i].Value)"/></td>
+                    colNumber++;
+                }
+            </tr>
+            rowNumber++;
+        }
+    </table>
+     foreach (var length in Model.WordLengths)
+     {
+         <span>
+             <b>Word Length:</b>
+             <select id="wordLength" name="wordLength">
+                <option @(length == 3 ? "selected " : null) value="3">3</option>
+                <option @(length == 4 ? "selected " : null) value="4">4</option>
+                <option @(length == 5 ? "selected " : null) value="5">5</option>
+                <option @(length == 6 ? "selected " : null) value="6">6</option>
+                <option @(length == 7 ? "selected " : null) value="7">7</option>
+                <option @(length == 8 ? "selected " : null) value="8">8</option>
+                <option @(length == 9 ? "selected " : null) value="9">9</option>
+                <option @(length == 10 ? "selected " : null) value="10">10</option>
+             </select>
+         </span>
+     }
+    <input type="submit" value="go"/>
+}
+
+
+<ul id="results">
+    @foreach (var word in Model.ValidWords)
+    {
+        <li>@word</li>
+    }
+</ul>
+
+<script>
+    $(document).ready(function () {
+
+        $(".character").keydown(function (e) {
+            var key = e.keyCode;
+            //return ((key >= 65 && key <= 90) || key == 8);
+
+
+            if ((key >= 65 && key <= 90)&&(this.value.length >= 1)) {
+                return true;
+            }
+            return false;
+        }).keyup(function () {
+            if (this.value.length >= 1) {
+                var $all = $('form :input');
+                var focused = $(':focus')[0];
+                for (var i = 0; i < $all.length - 1; ++i) {
+                    if ($all[i] != focused)
+                        continue;
+                    $all[i + 1].select();
+                    break;
+                }
+                // Must have been focused on the last one or none of them.
+                if (i == $all.length - 1)
+                    $all[0].select();
+            }
+        }).focus(function() {
+            $(this).select();
+        });
+
+    });
+</script>

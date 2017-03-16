@@ -1,0 +1,10 @@
+c:\users\daveh\documents\visual studio 2017\Projects\WordBrain\WordBrain.Data\bin\Debug\WordBrain.Data.dll.config
+c:\users\daveh\documents\visual studio 2017\Projects\WordBrain\WordBrain.Data\bin\Debug\WordBrain.Data.dll
+c:\users\daveh\documents\visual studio 2017\Projects\WordBrain\WordBrain.Data\bin\Debug\WordBrain.Data.pdb
+c:\users\daveh\documents\visual studio 2017\Projects\WordBrain\WordBrain.Data\bin\Debug\EntityFramework.dll
+c:\users\daveh\documents\visual studio 2017\Projects\WordBrain\WordBrain.Data\bin\Debug\EntityFramework.SqlServer.dll
+c:\users\daveh\documents\visual studio 2017\Projects\WordBrain\WordBrain.Data\bin\Debug\EntityFramework.xml
+c:\users\daveh\documents\visual studio 2017\Projects\WordBrain\WordBrain.Data\bin\Debug\EntityFramework.SqlServer.xml
+c:\users\daveh\documents\visual studio 2017\Projects\WordBrain\WordBrain.Data\obj\Debug\WordBrain.Data.csprojResolveAssemblyReference.cache
+c:\users\daveh\documents\visual studio 2017\Projects\WordBrain\WordBrain.Data\obj\Debug\WordBrain.Data.dll
+c:\users\daveh\documents\visual studio 2017\Projects\WordBrain\WordBrain.Data\obj\Debug\WordBrain.Data.pdb
