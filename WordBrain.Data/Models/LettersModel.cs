@@ -8,9 +8,30 @@ namespace WordBrain.Data.Models
     {
         public int GridHeight { get; set; }
         public int GridWidth { get; set; }
+        public string HideWords { get; set; }
+
+        public List<string> HideWordsList => new List<string>(HideWords.Split(','));
+
         public List<int> WordLengths { get; set; }
         public List<RowModel> Rows { get; set; }
-        public List<ColumnModel> Columns { get; set; }
+
+        public List<ColumnModel> Columns
+        {
+            get
+            {
+                var columns = new List<ColumnModel>();
+                for (var i = 0; i < GridWidth; i++)
+                {
+                    var column = new ColumnModel(this, i);
+                    for (var x = 0; x < GridHeight; x++)
+                    {
+                        column.Add(this[x, i]);
+                    }
+                    columns.Add(column);
+                }
+                return columns;
+            }
+        }
 
         public List<string> AllLetters
         {
@@ -19,7 +40,7 @@ namespace WordBrain.Data.Models
                 var allLetters = new List<string>();
                 foreach (var row in Rows)
                 {
-                    allLetters.AddRange(row.Select(col => col.Value));
+                    allLetters.AddRange(row.Select(col => col.Used ? null : col.Value));
                 }
                 return allLetters;
             }
@@ -27,7 +48,7 @@ namespace WordBrain.Data.Models
 
         public List<string> CharacterCombos { get; set; }
 
-        public List<string> ValidWords { get; set; }
+        public List<List<string>> ValidWords { get; set; }
 
         public CellModel this[int rowIndex, int columnIndex]
         {
@@ -37,23 +58,18 @@ namespace WordBrain.Data.Models
 
         public LettersModel()
         {
-            ValidWords = new List<string>();
-            WordLengths = new List<int> {4};
+            Rows = new List<RowModel>();
+            ValidWords = new List<List<string>>();
+            WordLengths = new List<int>();
         }
 
         public LettersModel(int gridHeight, int gridWidth):this()
         {
             GridHeight = gridHeight;
             GridWidth = gridWidth;
-            Rows = new List<RowModel>();
-            Columns = new List<ColumnModel>();
             for (var i = 0; i < gridHeight; i++)
             {
                 Rows.Add(new RowModel(this, i));
-            }
-            for (var i = 0; i < gridWidth; i++)
-            {
-                Columns.Add(new ColumnModel(this, i));
             }
         }
     }
@@ -99,14 +115,15 @@ namespace WordBrain.Data.Models
         public int RowIndex { get; set; }
         public int ColumnIndex { get; set; }
         public string Value { get; set; }
-        public bool HasForward { get; set; }
+        public bool HasForward => ColumnIndex < Parent.Columns.Count - 1;
         public bool HasBelowForward => HasBelow && HasForward;
-        public bool HasBelow { get; set; }
+        public bool HasBelow => RowIndex < Parent.Rows.Count - 1;
         public bool HasBelowAft => HasBelow && HasAft;
-        public bool HasAft { get; set; }
+        public bool HasAft => ColumnIndex > 0;
         public bool HasAboveAft => HasAbove && HasAft;
-        public bool HasAbove { get; set; }
+        public bool HasAbove => RowIndex > 0;
         public bool HasAboveForward => HasAbove && HasForward;
+        public bool Used { get; set; }
 
         public CellModel Forward => HasForward ? Parent[RowIndex, ColumnIndex + 1] : null;
         public CellModel BelowForward => HasBelow && HasForward ? Parent[RowIndex + 1, ColumnIndex + 1] : null;
@@ -159,53 +176,49 @@ namespace WordBrain.Data.Models
             Parent = parent;
             RowIndex = rowIndex;
             ColumnIndex = columnIndex;
-            HasAbove = RowIndex > 0;
-            HasBelow = RowIndex < Parent.Rows.Count - 1;
-            HasAft = ColumnIndex > 0;
-            HasForward = ColumnIndex < Parent.Columns.Count - 1;
             Value = GetLetter().ToString();
         }
 
-        public List<string> GetCombos(List<CellModel> blackouts)
+        public List<KeyValuePair<string, List<CellModel>>> GetCombos(List<CellModel> blackouts)
         {
-            var combos = new List<string>();
+            var combos = new List<KeyValuePair<string, List<CellModel>>>();
             if (HasForward)
             {
                 if (HasAbove && !blackouts.Contains(Parent[RowIndex - 1, ColumnIndex + 1]))
                 {
-                    combos.Add($"{Value}{Parent[RowIndex - 1, ColumnIndex + 1].Value}");
+                    combos.Add(new KeyValuePair<string, List<CellModel>>($"{Value}{Parent[RowIndex - 1, ColumnIndex + 1].Value}", new List<CellModel>{this, Parent[RowIndex - 1, ColumnIndex + 1] }));
                 }
                 if(!blackouts.Contains(Parent[RowIndex, ColumnIndex + 1]))
                 {
-                    combos.Add($"{Value}{Parent[RowIndex, ColumnIndex + 1].Value}");
+                    combos.Add(new KeyValuePair<string, List<CellModel>>($"{Value}{Parent[RowIndex, ColumnIndex + 1].Value}", new List<CellModel> { this, Parent[RowIndex, ColumnIndex + 1] }));
                 }
                 if (HasBelow && !blackouts.Contains(Parent[RowIndex + 1, ColumnIndex + 1]))
                 {
-                    combos.Add($"{Value}{Parent[RowIndex + 1, ColumnIndex + 1].Value}");
+                    combos.Add(new KeyValuePair<string, List<CellModel>>($"{Value}{Parent[RowIndex + 1, ColumnIndex + 1].Value}", new List<CellModel> { this, Parent[RowIndex + 1, ColumnIndex + 1] }));
                 }
             }
             if (HasBelow && !blackouts.Contains(Parent[RowIndex + 1, ColumnIndex]))
             {
-                combos.Add($"{Value}{Parent[RowIndex + 1, ColumnIndex].Value}");
+                combos.Add(new KeyValuePair<string, List<CellModel>>($"{Value}{Parent[RowIndex + 1, ColumnIndex].Value}", new List<CellModel> { this, Parent[RowIndex + 1, ColumnIndex] }));
             }
             if (HasAft)
             {
                 if (HasAbove && !blackouts.Contains(Parent[RowIndex - 1, ColumnIndex - 1]))
                 {
-                    combos.Add($"{Value}{Parent[RowIndex - 1, ColumnIndex - 1].Value}");
+                    combos.Add(new KeyValuePair<string, List<CellModel>>($"{Value}{Parent[RowIndex - 1, ColumnIndex - 1].Value}", new List<CellModel> { this, Parent[RowIndex - 1, ColumnIndex - 1] }));
                 }
                 if (!blackouts.Contains(Parent[RowIndex, ColumnIndex - 1]))
                 {
-                    combos.Add($"{Value}{Parent[RowIndex, ColumnIndex - 1].Value}");
+                    combos.Add(new KeyValuePair<string, List<CellModel>>($"{Value}{Parent[RowIndex, ColumnIndex - 1].Value}", new List<CellModel> { this, Parent[RowIndex, ColumnIndex - 1] }));
                 }
-                if (HasBelow &&  !blackouts.Contains(Parent[RowIndex + 1, ColumnIndex-1]))
+                if (HasBelow && !blackouts.Contains(Parent[RowIndex + 1, ColumnIndex-1]))
                 {
-                    combos.Add($"{Value}{Parent[RowIndex + 1, ColumnIndex - 1].Value}");
+                    combos.Add(new KeyValuePair<string, List<CellModel>>($"{Value}{Parent[RowIndex + 1, ColumnIndex - 1].Value}", new List<CellModel> { this, Parent[RowIndex + 1, ColumnIndex - 1] }));
                 }
             }
             if (HasAbove && !blackouts.Contains(Parent[RowIndex - 1, ColumnIndex]))
             {
-                combos.Add($"{Value}{Parent[RowIndex - 1, ColumnIndex].Value}");
+                combos.Add(new KeyValuePair<string, List<CellModel>>($"{Value}{Parent[RowIndex - 1, ColumnIndex].Value}", new List<CellModel> { this, Parent[RowIndex - 1, ColumnIndex] }));
             }
             return combos;
         }
@@ -247,6 +260,7 @@ namespace WordBrain.Data.Models
     {
         public string Candidate { get; set; }
         public HashSet<ListCandidate> List { get; set; }
+        public List<CellModel> Cells { get; set; }
 
         public HashSet<string> Children
         {

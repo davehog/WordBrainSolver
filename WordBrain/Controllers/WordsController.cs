@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using WordBrain.Data;
 using WordBrain.Data.Models;
 using WordBrain.Data.Services;
 
@@ -11,10 +11,10 @@ namespace WordBrain.Controllers
     { 
         public ActionResult Index(int gridHeight = 3, int gridWidth = 3) 
         {
-            var model = new LettersModel(gridHeight, gridWidth);
+            var model = new LettersModel(gridHeight, gridWidth){WordLengths = new List<int>{3}};
             if (Request.HttpMethod == "POST")
             {
-                model.WordLengths[0] = Convert.ToInt32(Request["wordLength"]);
+                model.WordLengths = new List<int>{Convert.ToInt32(Request["wordLength"])};
                 for (var i = 0; i < gridHeight; i++)
                 {
                     var currentRow = model.Rows[i];
@@ -24,13 +24,12 @@ namespace WordBrain.Controllers
                     }
                 }
                 var service = new WordsService();
-                var combos = service.GetAllCharacterCombos(model);
-                model.ValidWords = combos.Children.ToList();
+                var combos = service.GetAllCharacterCombos(model, 0);
+                model.ValidWords.Add(combos.Children.ToList());
 
             }
             return View(model);
         }
-
         
     }
 }

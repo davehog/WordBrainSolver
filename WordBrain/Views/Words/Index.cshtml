@@ -6,6 +6,8 @@
 
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(hw => Model.HideWords)
+    <input type="hidden" id="wordCount" name="wordCount" value="1"/>
     <b>Grid Size:</b>
     <select id="GridHeight" name="GridHeight" onchange="document.location.href = ('/words/index/?gridHeight=' + document.getElementById('GridHeight').options[document.getElementById('GridHeight').selectedIndex].value + '&gridWidth=' + document.getElementById('GridWidth').options[document.getElementById('GridWidth').selectedIndex].value);">
         <option @(Model.GridHeight == 3 ? "selected " : null) value="3">3</option>
@@ -34,7 +36,7 @@
             <tr id="row@(rowNumber)">
                 @for (var i = 0; i < row.CharCount; i++)
                 {
-                    <td><input  type="text" tabindex="@i" class="character" id="col@(rowNumber)_@colNumber" name="col@(rowNumber)_@colNumber" style="width: 30px;" maxlength="1" value="@(row[i].Value)"/></td>
+                    <td><input type="text" tabindex="@i" class="character" id="col@(rowNumber)_@colNumber" name="col@(rowNumber)_@colNumber" style="width: 30px;" maxlength="1" value="@(row[i].Value)"/></td>
                     colNumber++;
                 }
             </tr>
@@ -58,18 +60,41 @@
          </span>
      }
     <input type="submit" value="go"/>
+
+    <div id="words1">
+        @foreach (var list in Model.ValidWords)
+        {
+            foreach (var word in list)
+            {
+                <input type="radio" class="word" value="@word" name="word1" id="@word"/>
+                <label for="@word">@word</label>
+            }
+        }
+    </div>
+    <div id="more-words">
+        
+    </div>
 }
 
-
-<ul id="results">
-    @foreach (var word in Model.ValidWords)
-    {
-        <li>@word</li>
-    }
-</ul>
-
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
+
+        $('.word').click(function (e) {
+            var wordCount = parseInt($('#wordCount').val());
+            $('#wordLength'+wordCount).remove();
+            $('.word').removeClass('active');
+            $(this).addClass('active');
+            var s = $('<select id="wordLength' + wordCount + '" name="wordLength' + wordCount +'" />');
+            for (var i = 3; i <= 10; i++) {
+                $('<option />', { value: i, text: i }).appendTo(s);
+            }
+            var b = $('<input type="button" id="next" value="go" onclick="goClick()"/>');
+            $('#more-words').append(s);
+            $('#more-words').append(b);
+            wordCount++;
+            $('#wordCount').val(wordCount);
+        });
+        
 
         $(".character").keydown(function (e) {
             var key = e.keyCode;
@@ -99,4 +124,14 @@
         });
 
     });
+
+    function goClick() {
+        $.post(
+            "/api/combinations",
+            $('form').serialize(),
+            function (data) {
+                alert("Response: " + data);
+            }
+        );
+    }
 </script>

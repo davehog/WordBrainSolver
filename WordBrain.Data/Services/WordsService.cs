@@ -32,18 +32,18 @@ namespace WordBrain.Data.Services
 
         public HashSet<string> GetValidWords(HashSet<string> checkWords)
         {
-            checkWords.IntersectWith(allWords);
+            checkWords.IntersectWith(AllWords);
             return checkWords;
         }
 
-        public ListCandidate GetAllCharacterCombos(LettersModel letters)
+        public ListCandidate GetAllCharacterCombos(LettersModel letters, int wordLengthIndex)
         {
             var words = new HashSet<ListCandidate>();
             foreach (var row in letters.Rows)
             {
                 foreach (var cell in row)
                 {
-                    var combos = GetCharacterCombos(letters, cell);
+                    var combos = GetCharacterCombos(letters, cell, wordLengthIndex);
                     foreach (var combo in combos)
                     {
                         words.Add(combo);
@@ -53,7 +53,87 @@ namespace WordBrain.Data.Services
             return new ListCandidate {List = words};
         }
 
-        public List<ListCandidate> GetCharacterCombos(LettersModel letters, CellModel startCell)
+        public List<LettersModel> GetLettersMinusWords(LettersModel letters, List<string> words)
+        {
+            var lettersList = new List<LettersModel>();
+            var accumulatedLetters = string.Empty;
+            foreach (var word in words)
+            {
+                accumulatedLetters += word;
+                var letterInstances = new List<List<CellModel>>();
+                foreach (var letter in accumulatedLetters)
+                {
+                    letterInstances.Add(FindInstances(letters, letter, new List<CellModel>()));
+                }
+                var validCombos = letterInstances.CartesianProduct();
+                foreach (var validCombo in validCombos)
+                {
+                    lettersList.Add(SubtractCells(letters, validCombo));
+                }
+            }
+            return lettersList;
+        }
+
+        public LettersModel SubtractCells(LettersModel source, IEnumerable<CellModel> removals)
+        {
+            var letters = new LettersModel(source.GridHeight, source.GridWidth) { WordLengths = source.WordLengths };
+            for (var i = 0; i < source.GridHeight; i++)
+            {
+                for (var x = 0; x < source.GridWidth; x++)
+                {
+                    if (removals.Contains(source[i, x]))
+                    {
+                        letters[i, x].Value = null;
+                        letters[i, x].Used = true;
+                    }
+                    else
+                    {
+                        letters[i, x].Value = source[i, x].Value;
+                        letters[i, x].Used = source[i, x].Used;
+                    }
+                }
+            }
+            return Compress(letters);
+        }
+
+        public LettersModel Compress(LettersModel source)
+        {
+            var letters = new LettersModel(source.GridHeight, source.GridWidth) { WordLengths = source.WordLengths };
+            for (var r = source.GridWidth-1; r >= 0; r--)
+            {
+                for (var x = source.GridHeight-1; x >= 0; x--)
+                {
+                    var i = x;
+                    while (i > 0 && source[i, r] != null && source[i, r].Used)
+                    {
+                        i--;
+                    }
+                    if (source[i, r] != null && !source[i,r].Used)
+                    {
+                        letters[x, r].Value = source[i, r].Value;
+                        source[i, r].Used = true;
+                    }
+                    else
+                    {
+                        letters[x, r].Value = "0";
+                        letters[x, r].Used = true;
+                    }
+                }
+            }
+            return letters;
+        }
+
+        public List<CellModel> FindInstances(LettersModel letters, char letter, List<CellModel> skipCells)
+        {
+            var matchingCells = new List<CellModel>();
+            foreach (var row in letters.Rows)
+            {
+                matchingCells.AddRange(row.Where(c => !skipCells.Contains(c) && string.CompareOrdinal(letter.ToString(), c.Value) == 0));
+            }
+            return matchingCells;
+        }
+
+        public List<ListCandidate> GetCharacterCombos(LettersModel letters, CellModel startCell, int wordIndex = 0)
         {
             var doneList = new Dictionary<int, HashSet<CellModel>>();
             var currentCell = startCell;
@@ -62,7 +142,7 @@ namespace WordBrain.Data.Services
             var completedCells = new List<CellModel>();
 
             var currentString = currentCell.Value;
-            for (var i = 1; i < letters.WordLengths[0] - 1; i++)
+            for (var i = 1; i < letters.WordLengths[wordIndex] - 1; i++)
             {
                 if (!doneList.ContainsKey(i))
                 {
@@ -103,14 +183,14 @@ namespace WordBrain.Data.Services
                     i = currentString.Length;
                     nextCell = currentCell;
                 }
-                if (i == letters.WordLengths[0] - 2)
+                if (i == letters.WordLengths[wordIndex] - 2)
                 {
                     foreach (var combo in nextCell.GetCombos(currentList))
                     {
-                        var candidate = $"{currentString}{combo}";
+                        var candidate = $"{currentString}{combo.Key}";
                         if (IsValidWord(candidate))
                         {
-                            words.Add(new ListCandidate { Candidate = candidate });
+                            words.Add(new ListCandidate { Candidate = candidate, Cells = currentList.Concat(combo.Value).ToList()});
                         }
                     }
                     i = currentString.Length - 1;
