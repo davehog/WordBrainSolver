@@ -8,3 +8,13 @@ C:\Users\daveh\Documents\Visual Studio 2017\Projects\WordBrain\WordBrain.Data\bi
 C:\Users\daveh\Documents\Visual Studio 2017\Projects\WordBrain\WordBrain.Data\obj\Release\WordBrain.Data.csprojResolveAssemblyReference.cache
 C:\Users\daveh\Documents\Visual Studio 2017\Projects\WordBrain\WordBrain.Data\obj\Release\WordBrain.Data.dll
 C:\Users\daveh\Documents\Visual Studio 2017\Projects\WordBrain\WordBrain.Data\obj\Release\WordBrain.Data.pdb
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Data\bin\Release\WordBrain.Data.dll.config
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Data\bin\Release\WordBrain.Data.dll
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Data\bin\Release\WordBrain.Data.pdb
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Data\bin\Release\EntityFramework.dll
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Data\bin\Release\EntityFramework.SqlServer.dll
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Data\bin\Release\EntityFramework.xml
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Data\bin\Release\EntityFramework.SqlServer.xml
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Data\obj\Release\WordBrain.Data.csprojResolveAssemblyReference.cache
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Data\obj\Release\WordBrain.Data.dll
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Data\obj\Release\WordBrain.Data.pdb

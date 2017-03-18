@@ -60,16 +60,16 @@ namespace WordBrain.Data.Services
             foreach (var word in words)
             {
                 accumulatedLetters += word;
-                var letterInstances = new List<List<CellModel>>();
-                foreach (var letter in accumulatedLetters)
-                {
-                    letterInstances.Add(FindInstances(letters, letter, new List<CellModel>()));
-                }
-                var validCombos = letterInstances.CartesianProduct();
-                foreach (var validCombo in validCombos)
-                {
-                    lettersList.Add(SubtractCells(letters, validCombo));
-                }
+            }
+            var letterInstances = new List<List<CellModel>>();
+            foreach (var letter in accumulatedLetters)
+            {
+                letterInstances.Add(FindInstances(letters, letter, new List<CellModel>()));
+            }
+            var validCombos = letterInstances.CartesianProduct();
+            foreach (var validCombo in validCombos)
+            {
+                lettersList.Add(SubtractCells(letters, validCombo));
             }
             return lettersList;
         }

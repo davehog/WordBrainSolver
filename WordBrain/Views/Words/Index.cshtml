@@ -79,22 +79,8 @@
 <script>
     $(document).ready(function() {
 
-        $('.word').click(function (e) {
-            var wordCount = parseInt($('#wordCount').val());
-            $('#wordLength'+wordCount).remove();
-            $('.word').removeClass('active');
-            $(this).addClass('active');
-            var s = $('<select id="wordLength' + wordCount + '" name="wordLength' + wordCount +'" />');
-            for (var i = 3; i <= 10; i++) {
-                $('<option />', { value: i, text: i }).appendTo(s);
-            }
-            var b = $('<input type="button" id="next" value="go" onclick="goClick()"/>');
-            $('#more-words').append(s);
-            $('#more-words').append(b);
-            wordCount++;
-            $('#wordCount').val(wordCount);
-        });
-        
+        $('.word').click(wordClick);
+
 
         $(".character").keydown(function (e) {
             var key = e.keyCode;
@@ -125,12 +111,37 @@
 
     });
 
+    function wordClick(e) {
+        var wordCount = parseInt($('#wordCount').val());
+        $('#wordLength' + wordCount).remove();
+        $('.word').removeClass('active');
+        $(this).addClass('active');
+        var s = $('<select id="wordLength' + wordCount + '" name="wordLength' + wordCount + '" />');
+        for (var i = 3; i <= 10; i++) {
+            $('<option />', { value: i, text: i }).appendTo(s);
+        }
+        var b = $('<input type="button" id="next" value="go" onclick="goClick()"/>');
+        $('#more-words').append(s);
+        $('#more-words').append(b);
+        wordCount++;
+        $('#wordCount').val(wordCount);
+    }
+
     function goClick() {
         $.post(
             "/api/combinations",
             $('form').serialize(),
             function (data) {
-                alert("Response: " + data);
+                var wordCount = parseInt($('#wordCount').val());
+                for (var i = 0; i < data.length; i++) {
+                    var r = $('<input type="radio" class="word" value="' + data[i] + '" name="word' + wordCount + '" id="' + data[i] + '"/>');
+                    var l = $('<label for="' + data[i] + '">' + data[i] + '</label>');
+                    $('#more-words').append(r);
+                    $('#more-words').append(l);
+                }
+                $('#more-words').append("<br/>");
+                $('.word').off("click");
+                $('.word').click(wordClick);
             }
         );
     }
