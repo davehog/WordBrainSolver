@@ -11,7 +11,7 @@ namespace WordBrain.Controllers
     { 
         public ActionResult Index(int gridHeight = 3, int gridWidth = 3) 
         {
-            var model = new LettersModel(gridHeight, gridWidth){WordLengths = new List<int>{3}};
+            var model = new GridModel(gridHeight, gridWidth){WordLengths = new List<int>{3}};
             if (Request.HttpMethod == "POST")
             {
                 model.WordLengths = new List<int>{Convert.ToInt32(Request["wordLength1"])};

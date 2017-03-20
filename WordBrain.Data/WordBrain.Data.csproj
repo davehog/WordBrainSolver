@@ -65,7 +65,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
-    <Compile Include="Models\LettersModel.cs" />
+    <Compile Include="Models\CandidateWordModel.cs" />
+    <Compile Include="Models\CellModel.cs" />
+    <Compile Include="Models\ColumnModel.cs" />
+    <Compile Include="Models\GridModel.cs" />
+    <Compile Include="Models\RowModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\PermuteService.cs" />
     <Compile Include="WordList.cs">

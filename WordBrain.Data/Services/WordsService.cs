@@ -38,26 +38,26 @@ namespace WordBrain.Data.Services
             return checkWords;
         }
 
-        public ListCandidate GetAllCharacterCombos(LettersModel letters, int wordLengthIndex)
+        public CandidateWordModel GetAllCharacterCombos(GridModel grid, int wordLengthIndex)
         {
-            var words = new HashSet<ListCandidate>();
-            foreach (var row in letters.Rows)
+            var words = new HashSet<CandidateWordModel>();
+            foreach (var row in grid.Rows)
             {
                 foreach (var cell in row)
                 {
-                    var combos = GetCharacterCombos(letters, cell, wordLengthIndex);
+                    var combos = GetCharacterCombos(grid, cell, wordLengthIndex);
                     foreach (var combo in combos)
                     {
                         words.Add(combo);
                     }
                 }
             }
-            return new ListCandidate {List = words};
+            return new CandidateWordModel {List = words};
         }
 
-        public List<LettersModel> GetLettersMinusWords(LettersModel letters, List<string> words)
+        public List<GridModel> GetLettersMinusWords(GridModel grid, List<string> words)
         {
-            var lettersList = new List<LettersModel>();
+            var lettersList = new List<GridModel>();
             var accumulatedLetters = string.Empty;
             foreach (var word in words)
             {
@@ -66,19 +66,19 @@ namespace WordBrain.Data.Services
             var letterInstances = new List<List<CellModel>>();
             foreach (var letter in accumulatedLetters)
             {
-                letterInstances.Add(FindInstances(letters, letter, new List<CellModel>()));
+                letterInstances.Add(FindInstances(grid, letter, new List<CellModel>()));
             }
             var validCombos = letterInstances.CartesianProduct();
             foreach (var validCombo in validCombos)
             {
-                lettersList.Add(SubtractCells(letters, validCombo));
+                lettersList.Add(SubtractCells(grid, validCombo));
             }
             return lettersList;
         }
 
-        public LettersModel SubtractCells(LettersModel source, IEnumerable<CellModel> removals)
+        public GridModel SubtractCells(GridModel source, IEnumerable<CellModel> removals)
         {
-            var letters = new LettersModel(source.GridHeight, source.GridWidth) { WordLengths = source.WordLengths };
+            var letters = new GridModel(source.GridHeight, source.GridWidth) { WordLengths = source.WordLengths };
             for (var i = 0; i < source.GridHeight; i++)
             {
                 for (var x = 0; x < source.GridWidth; x++)
@@ -98,9 +98,9 @@ namespace WordBrain.Data.Services
             return Compress(letters);
         }
 
-        public LettersModel Compress(LettersModel source)
+        public GridModel Compress(GridModel source)
         {
-            var letters = new LettersModel(source.GridHeight, source.GridWidth) { WordLengths = source.WordLengths };
+            var letters = new GridModel(source.GridHeight, source.GridWidth) { WordLengths = source.WordLengths };
             for (var r = source.GridWidth-1; r >= 0; r--)
             {
                 for (var x = source.GridHeight-1; x >= 0; x--)
@@ -125,26 +125,26 @@ namespace WordBrain.Data.Services
             return letters;
         }
 
-        public List<CellModel> FindInstances(LettersModel letters, char letter, List<CellModel> skipCells)
+        public List<CellModel> FindInstances(GridModel grid, char letter, List<CellModel> skipCells)
         {
             var matchingCells = new List<CellModel>();
-            foreach (var row in letters.Rows)
+            foreach (var row in grid.Rows)
             {
                 matchingCells.AddRange(row.Where(c => !skipCells.Contains(c) && string.CompareOrdinal(letter.ToString(), c.Value) == 0));
             }
             return matchingCells;
         }
 
-        public List<ListCandidate> GetCharacterCombos(LettersModel letters, CellModel startCell, int wordIndex = 0)
+        public List<CandidateWordModel> GetCharacterCombos(GridModel grid, CellModel startCell, int wordIndex = 0)
         {
             var doneList = new Dictionary<int, HashSet<CellModel>>();
             var currentCell = startCell;
-            var words = new List<ListCandidate>();
+            var words = new List<CandidateWordModel>();
             var currentList = new List<CellModel> { currentCell };
             var completedCells = new List<CellModel>();
 
             var currentString = currentCell.Value;
-            for (var i = 1; i < letters.WordLengths[wordIndex] - 1; i++)
+            for (var i = 1; i < grid.WordLengths[wordIndex] - 1; i++)
             {
                 if (!doneList.ContainsKey(i))
                 {
@@ -185,14 +185,14 @@ namespace WordBrain.Data.Services
                     i = currentString.Length;
                     nextCell = currentCell;
                 }
-                if (i == letters.WordLengths[wordIndex] - 2)
+                if (i == grid.WordLengths[wordIndex] - 2)
                 {
                     foreach (var combo in nextCell.GetCombos(currentList))
                     {
                         var candidate = $"{currentString}{combo.Key}";
                         if (IsValidWord(candidate))
                         {
-                            words.Add(new ListCandidate { Candidate = candidate, Cells = currentList.Concat(combo.Value).ToList()});
+                            words.Add(new CandidateWordModel { Candidate = candidate, Cells = currentList.Concat(combo.Value).ToList()});
                         }
                     }
                     i = currentString.Length - 1;
@@ -211,9 +211,9 @@ namespace WordBrain.Data.Services
             return words;
         }
 
-        public HashSet<ListCandidate> GetPermutations(List<string> remainingLetters, List<int> sizes)
+        public HashSet<CandidateWordModel> GetPermutations(List<string> remainingLetters, List<int> sizes)
         {
-            var permutations = new HashSet<ListCandidate>();
+            var permutations = new HashSet<CandidateWordModel>();
             var allPermutations = permuteService.Permute(remainingLetters, sizes[0]);
             foreach (var permutation in allPermutations)
             {
@@ -225,7 +225,7 @@ namespace WordBrain.Data.Services
                     {
                         newRemainingLetters.Remove(l);
                     }
-                    var candidate = new ListCandidate {Candidate = string.Join(null, permutation)};
+                    var candidate = new CandidateWordModel {Candidate = string.Join(null, permutation)};
                     if (sizes.Count > 1 && newRemainingLetters.Any())
                     {
                         var newSizes = new List<int>(sizes);

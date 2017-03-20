@@ -1,4 +1,4 @@
-﻿@model WordBrain.Data.Models.LettersModel
+﻿@model WordBrain.Data.Models.GridModel
 @{
     ViewBag.Title = "Index";
     var rowNumber = 0;
@@ -84,9 +84,6 @@
 
         $(".character").keydown(function (e) {
             var key = e.keyCode;
-            //return ((key >= 65 && key <= 90) || key == 8);
-
-
             if ((key >= 65 && key <= 90)&&(this.value.length >= 1)) {
                 return true;
             }

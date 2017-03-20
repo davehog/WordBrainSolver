@@ -14,7 +14,7 @@ namespace WordBrain.Tests
         [TestMethod]
         public void TestLetters()
         {
-            var letters = new LettersModel(3,3){WordLengths = new List<int>{3,6}};
+            var letters = new GridModel(3,3){WordLengths = new List<int>{3,6}};
             letters[0, 0] = new CellModel(letters, 0, 0) { Value = "t" };
             letters[0, 1] = new CellModel(letters, 0, 1) { Value = "h" };
             letters[0, 2] = new CellModel(letters, 0, 2) { Value = "e" };

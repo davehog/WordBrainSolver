@@ -32,7 +32,7 @@ namespace WordBrain.Controllers
                 }
             }
 
-            var model = new LettersModel(gridHeight, gridWidth) { WordLengths = wordLengths };
+            var model = new GridModel(gridHeight, gridWidth) { WordLengths = wordLengths };
             for (var i = 0; i < gridHeight; i++)
             {
                 for (var x = 0; x < gridWidth; x++)
