@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using WordBrain.Data.Models;
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -23,7 +24,8 @@ namespace WordBrain.Data.Services
                 {
                     using (var context = new wordsEntities())
                     {
-                        allWords = new HashSet<string>(context.WordLists.Select(w => w.Word).ToList());
+                        var rx = new Regex("[aeiouy]", RegexOptions.IgnoreCase);
+                        allWords = new HashSet<string>(context.WordLists.ToList().Where(w => rx.IsMatch(w.Word)).Select(w => w.Word).ToList());
                     }
                 }
                 return allWords;

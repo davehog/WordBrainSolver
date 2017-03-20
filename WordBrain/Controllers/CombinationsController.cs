@@ -20,9 +20,12 @@ namespace WordBrain.Controllers
             var wordCount = Convert.ToInt32(getFormKeyValue("wordCount"));
             var wordLengths = new List<int>();
             var words = new List<string>();
-            for (var i = 0; i < wordCount; i++)
+            for (var i = 1; i <= wordCount+1; i++)
             {
-                wordLengths.Add(i == 0 ? Convert.ToInt32(getFormKeyValue("wordLength")) : Convert.ToInt32(getFormKeyValue($"wordLength{i}")));
+                if (!string.IsNullOrWhiteSpace(getFormKeyValue($"wordLength{i}")))
+                {
+                    wordLengths.Add(Convert.ToInt32(getFormKeyValue($"wordLength{i}")));
+                }
                 if (!string.IsNullOrWhiteSpace(getFormKeyValue($"word{i}")))
                 {
                     words.Add(getFormKeyValue($"word{i}"));
@@ -55,14 +58,14 @@ namespace WordBrain.Controllers
         }
         public string getFormKeyValue(string key)
         {
-            var value = "";
+            var value = string.Empty;
             try
             {
                 var values = HttpContext.Current.Request.Form.GetValues(key);
                 if (values != null && values.Length >= 1)
                     value = values[0];
             }
-            catch (Exception exp) { /* do something with this */ }
+            catch  { /* do something with this */ }
 
             return value;
         }

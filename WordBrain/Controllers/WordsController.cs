@@ -14,7 +14,7 @@ namespace WordBrain.Controllers
             var model = new LettersModel(gridHeight, gridWidth){WordLengths = new List<int>{3}};
             if (Request.HttpMethod == "POST")
             {
-                model.WordLengths = new List<int>{Convert.ToInt32(Request["wordLength"])};
+                model.WordLengths = new List<int>{Convert.ToInt32(Request["wordLength1"])};
                 for (var i = 0; i < gridHeight; i++)
                 {
                     var currentRow = model.Rows[i];

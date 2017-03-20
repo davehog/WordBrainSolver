@@ -7,7 +7,7 @@
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(hw => Model.HideWords)
-    <input type="hidden" id="wordCount" name="wordCount" value="1"/>
+    <input type="hidden" id="wordCount" name="wordCount" value="@Model.WordLengths.Count"/>
     <b>Grid Size:</b>
     <select id="GridHeight" name="GridHeight" onchange="document.location.href = ('/words/index/?gridHeight=' + document.getElementById('GridHeight').options[document.getElementById('GridHeight').selectedIndex].value + '&gridWidth=' + document.getElementById('GridWidth').options[document.getElementById('GridWidth').selectedIndex].value);">
         <option @(Model.GridHeight == 3 ? "selected " : null) value="3">3</option>
@@ -46,8 +46,8 @@
      foreach (var length in Model.WordLengths)
      {
          <span>
-             <b>Word Length:</b>
-             <select id="wordLength" name="wordLength">
+             <b>Word Length (1):</b>
+             <select id="wordLength1" name="wordLength1">
                 <option @(length == 3 ? "selected " : null) value="3">3</option>
                 <option @(length == 4 ? "selected " : null) value="4">4</option>
                 <option @(length == 5 ? "selected " : null) value="5">5</option>
@@ -66,8 +66,8 @@
         {
             foreach (var word in list)
             {
-                <input type="radio" class="word" value="@word" name="word1" id="@word"/>
-                <label for="@word">@word</label>
+                <input type="radio" class="word" value="@word" name="word1" id="@(word)1"/>
+                <label for="@(word)1">@word</label>
             }
         }
     </div>
@@ -113,18 +113,27 @@
 
     function wordClick(e) {
         var wordCount = parseInt($('#wordCount').val());
-        $('#wordLength' + wordCount).remove();
-        $('.word').removeClass('active');
-        $(this).addClass('active');
-        var s = $('<select id="wordLength' + wordCount + '" name="wordLength' + wordCount + '" />');
-        for (var i = 3; i <= 10; i++) {
-            $('<option />', { value: i, text: i }).appendTo(s);
+        var wordIndex = wordCount + 1;
+        var wordIndexDisplay = wordIndex === 1 ? wordIndex + 1 : wordIndex;
+        if ($('input[name=word' + wordCount + ']:checked').val()) {
+            $('.word').removeClass('active');
+            $(this).addClass('active');
+            var w = $('<b>Word Length (' + wordIndexDisplay + '): </b>');
+            var s = $('<select id="wordLength' + wordIndexDisplay + '" name="wordLength' + wordIndexDisplay + '" />');
+            for (var i = 3; i <= 10; i++) {
+                $('<option />', { value: i, text: i }).appendTo(s);
+            }
+            var b = $('<input type="button" id="next" value="go" onclick="goClick()"/>');
+
+            var d = $('<div id="selector' + wordIndex+'"></div>');
+            d.append(w);
+            d.append(s);
+            d.append("&nbsp;");
+            d.append(b);
+            $('#more-words').append(d);
+            wordCount++;
+            $('#wordCount').val(wordCount);
         }
-        var b = $('<input type="button" id="next" value="go" onclick="goClick()"/>');
-        $('#more-words').append(s);
-        $('#more-words').append(b);
-        wordCount++;
-        $('#wordCount').val(wordCount);
     }
 
     function goClick() {
@@ -133,15 +142,17 @@
             $('form').serialize(),
             function (data) {
                 var wordCount = parseInt($('#wordCount').val());
+                $('#more-words').append("<br/>");
                 for (var i = 0; i < data.length; i++) {
-                    var r = $('<input type="radio" class="word" value="' + data[i] + '" name="word' + wordCount + '" id="' + data[i] + '"/>');
-                    var l = $('<label for="' + data[i] + '">' + data[i] + '</label>');
+                    var r = $('<input type="radio" class="word" value="' + data[i] + '" name="word' + wordCount + '" id="' + data[i] + wordCount +'"/>');
+                    var l = $('<label for="' + data[i] + wordCount + '">&nbsp;' + data[i] + '&nbsp;</label>');
                     $('#more-words').append(r);
                     $('#more-words').append(l);
                 }
                 $('#more-words').append("<br/>");
                 $('.word').off("click");
                 $('.word').click(wordClick);
+                $('#wordCount').val(wordCount);
             }
         );
     }
