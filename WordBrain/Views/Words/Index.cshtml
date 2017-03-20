@@ -142,14 +142,17 @@
             $('form').serialize(),
             function (data) {
                 var wordCount = parseInt($('#wordCount').val());
-                $('#more-words').append("<br/>");
+                $('#words' + wordCount).remove();
+                var d = $('<div id="words' + wordCount + '"></div>');
+                d.append("<br/>");
                 for (var i = 0; i < data.length; i++) {
                     var r = $('<input type="radio" class="word" value="' + data[i] + '" name="word' + wordCount + '" id="' + data[i] + wordCount +'"/>');
                     var l = $('<label for="' + data[i] + wordCount + '">&nbsp;' + data[i] + '&nbsp;</label>');
-                    $('#more-words').append(r);
-                    $('#more-words').append(l);
+                    d.append(r);
+                    d.append(l);
                 }
-                $('#more-words').append("<br/>");
+                d.append("<br/>");
+                $('#more-words').append(d);
                 $('.word').off("click");
                 $('.word').click(wordClick);
                 $('#wordCount').val(wordCount);
