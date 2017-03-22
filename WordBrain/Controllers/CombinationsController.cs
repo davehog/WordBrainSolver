@@ -45,7 +45,7 @@ namespace WordBrain.Controllers
             var results = new HashSet<string>();
             foreach (var combo in combos)
             {
-                var result = service.GetAllCharacterCombos(combo, wordLengths.Count-1);
+                var result = service.GetAllValidWords(combo, wordLengths.Count-1);
                 if (result.Children.Any())
                 {
                     foreach (var word in result.Children)

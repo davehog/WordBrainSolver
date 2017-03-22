@@ -98,6 +98,8 @@ C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\Newtonsoft
 C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\System.Web.Http.xml
 C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\System.Net.Http.Formatting.xml
 C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\Newtonsoft.Json.xml
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\System.Web.Http.WebHost.dll
+C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\System.Web.Http.WebHost.xml
 C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\roslyn\csc.exe
 C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\roslyn\csc.exe.config
 C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\roslyn\csc.rsp
@@ -124,5 +126,3 @@ C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\roslyn\vbc
 C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\roslyn\vbc.rsp
 C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\roslyn\VBCSCompiler.exe
 C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\roslyn\VBCSCompiler.exe.config
-C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\System.Web.Http.WebHost.dll
-C:\Users\daveh\Source\Repos\WordBrainSolver\WordBrain.Tests\bin\Debug\System.Web.Http.WebHost.xml

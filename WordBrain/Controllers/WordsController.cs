@@ -24,7 +24,7 @@ namespace WordBrain.Controllers
                     }
                 }
                 var service = new WordsService();
-                var combos = service.GetAllCharacterCombos(model, 0);
+                var combos = service.GetAllValidWords(model, 0);
                 model.ValidWords.Add(combos.Children.ToList());
 
             }

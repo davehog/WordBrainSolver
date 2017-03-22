@@ -31,7 +31,7 @@ namespace WordBrain.Tests
             var results = new HashSet<string>();
             foreach (var combo in combos)
             {
-                var result = service.GetAllCharacterCombos(combo, 1);
+                var result = service.GetAllValidWords(combo, 1);
                 if (result.Children.Any())
                 {
                     foreach (var word in result.Children)
@@ -43,16 +43,7 @@ namespace WordBrain.Tests
 
             Assert.IsTrue(results.Count > 0);
         }
-
-        [TestMethod]
-        public void TestPermute()
-        {
-            var stringInput = new List<string>{ "d", "f", "e", "r", "x", "a", "o", "a", "t", "r" };
-            var service = new WordsService();
-            var perms = service.GetPermutations(stringInput, new List<int> {6, 4});
-            Assert.IsNotNull(perms);
-        }
-
+        
         [TestMethod]
         public void TestWords()
         {
