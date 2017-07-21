@@ -9,7 +9,13 @@ namespace WordBrain.Data.Services
     public class WordsService
     {
 
+#pragma warning disable 649
         private HashSet<string> allWords;
+#pragma warning restore 649
+
+        /// <summary>
+        /// Gets a list of all valid words from the database and caches it
+        /// </summary>
         public HashSet<string> AllWords
         {
             get
@@ -19,20 +25,24 @@ namespace WordBrain.Data.Services
                     using (var context = new wordsEntities())
                     {
                         var rx = new Regex("[aeiouy]", RegexOptions.IgnoreCase);
+                        var cl = new Regex("[A-Z]");
+                        var pun = new Regex("[^A-Za-z]+");
                         allWords = new HashSet<string>(context.WordLists.ToList().Where(w => rx.IsMatch(w.Word)).Select(w => w.Word).ToList());
+                        allWords = new HashSet<string>(allWords.Where(w => !cl.IsMatch(w)).ToList());
+                        allWords = new HashSet<string>(allWords.Where(w => !pun.IsMatch(w)).ToList());
                     }
                 }
                 return allWords;
             }
         }
 
-        public HashSet<string> GetValidWords(HashSet<string> checkWords)
-        {
-            checkWords.IntersectWith(AllWords);
-            return checkWords;
-        }
-
-        public CandidateWordModel GetAllValidWords(GridModel grid, int wordLengthIndex)
+        /// <summary>
+        /// For a given Grid, this gets a list of all candidate words of a given length
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <param name="wordLengthIndex"></param>
+        /// <returns></returns>
+        public CandidateWordModel GetAllCandidateWords(GridModel grid, int wordLengthIndex)
         {
             var words = new HashSet<CandidateWordModel>();
             foreach (var row in grid.Rows)
@@ -49,6 +59,12 @@ namespace WordBrain.Data.Services
             return new CandidateWordModel {List = words};
         }
 
+        /// <summary>
+        /// Gets all letter combinations in the supplied grid, minus the list of supplied words
+        /// </summary>
+        /// <param name="grid">The grid in which to find the letter combinations</param>
+        /// <param name="words">the words to exclude from the grid</param>
+        /// <returns></returns>
         public List<GridModel> GetLettersMinusWords(GridModel grid, List<string> words)
         {
             var accumulatedLetters = words.Aggregate(string.Empty, (current, word) => current + word);
@@ -57,6 +73,12 @@ namespace WordBrain.Data.Services
             return validCombos.Select(validCombo => SubtractCells(grid, validCombo)).ToList();
         }
 
+        /// <summary>
+        /// Remove and <c ref="Tetrisify"/> 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="removals"></param>
+        /// <returns></returns>
         public GridModel SubtractCells(GridModel source, IEnumerable<CellModel> removals)
         {
             var letters = new GridModel(source.GridHeight, source.GridWidth) { WordLengths = source.WordLengths };
@@ -79,6 +101,11 @@ namespace WordBrain.Data.Services
             return Tetrisify(letters);
         }
 
+        /// <summary>
+        /// Removes used cells and return a new grid with the cells containing valid letters sunk to the bottom
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public GridModel Tetrisify(GridModel source)
         {
             var letters = new GridModel(source.GridHeight, source.GridWidth) { WordLengths = source.WordLengths };
@@ -116,6 +143,13 @@ namespace WordBrain.Data.Services
             return matchingCells;
         }
 
+        /// <summary>
+        /// Gets a list of valid words of the specified length from the supplied <see cref="startCell"/>
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <param name="startCell"></param>
+        /// <param name="wordIndex"></param>
+        /// <returns></returns>
         public List<CandidateWordModel> GetValidWords(GridModel grid, CellModel startCell, int wordIndex = 0)
         {
             var doneList = new Dictionary<int, HashSet<CellModel>>();
@@ -196,7 +230,7 @@ namespace WordBrain.Data.Services
         {
             return AllWords.Contains(word);
         }
-        
+
     }
 
 }

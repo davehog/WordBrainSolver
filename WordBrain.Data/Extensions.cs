@@ -5,6 +5,12 @@ namespace WordBrain.Data
 {
     public static class Extensions
     {
+        /// <summary>
+        /// Given a list of N, return all possible combinations in that list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sequences"></param>
+        /// <returns></returns>
         public static IEnumerable<IEnumerable<T>> CartesianProduct<T>(this IEnumerable<IEnumerable<T>> sequences)
         {
             IEnumerable<IEnumerable<T>> emptyProduct = new[] { Enumerable.Empty<T>() };

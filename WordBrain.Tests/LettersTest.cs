@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WordBrain.Data;
 using WordBrain.Data.Models;
@@ -11,6 +12,21 @@ namespace WordBrain.Tests
     [TestClass]
     public class LettersTest
     {
+        [TestMethod]
+        public void TestDB()
+        {
+            using (var context = new wordsEntities())
+            {
+                var rx = new Regex("[aeiouy]", RegexOptions.IgnoreCase);
+                var cl = new Regex("[A-Z]");
+                var pun = new Regex("[^A-Za-z]+");
+                var allWords = new HashSet<string>(context.WordLists.ToList().Where(w => rx.IsMatch(w.Word)).Select(w => w.Word).ToList());
+                allWords = new HashSet<string>(allWords.Where(w => !cl.IsMatch(w)).ToList());
+                allWords = new HashSet<string>(allWords.Where(w => !pun.IsMatch(w)).ToList());
+                Assert.IsTrue(allWords.Count > 0);
+            }
+        }
+
         [TestMethod]
         public void TestLetters()
         {
@@ -31,7 +47,7 @@ namespace WordBrain.Tests
             var results = new HashSet<string>();
             foreach (var combo in combos)
             {
-                var result = service.GetAllValidWords(combo, 1);
+                var result = service.GetAllCandidateWords(combo, 1);
                 if (result.Children.Any())
                 {
                     foreach (var word in result.Children)

@@ -29,6 +29,11 @@ namespace WordBrain.Data.Models
         public CellModel Above => HasAbove ? Parent[RowIndex - 1, ColumnIndex] : null;
         public CellModel AboveForward => HasAbove && HasForward ? Parent[RowIndex - 1, ColumnIndex + 1] : null;
 
+        /// <summary>
+        /// Gets the next cell in a clockwise rotation (excluding <see cref="blackouts"/>)
+        /// </summary>
+        /// <param name="blackouts"></param>
+        /// <returns></returns>
         public CellModel GetNextCell(List<CellModel> blackouts)
         {
             if (HasForward && !blackouts.Contains(Forward))
@@ -74,6 +79,11 @@ namespace WordBrain.Data.Models
             Value = GetLetter().ToString();
         }
 
+        /// <summary>
+        /// Returns a List of KeyValuePairss of two-letter combos that exist from this cell (excluding <see cref="blackouts"/>)
+        /// </summary>
+        /// <param name="blackouts">Cells to omit from the return</param>
+        /// <returns></returns>
         public List<KeyValuePair<string, List<CellModel>>> GetCombos(List<CellModel> blackouts)
         {
             var combos = new List<KeyValuePair<string, List<CellModel>>>();
